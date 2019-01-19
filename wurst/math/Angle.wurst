@@ -6,6 +6,8 @@ import Wurstunit
 public constant DEGTORAD  	=  0.017453293
 /** Converts Radians to Degrees */
 public constant RADTODEG  	= 57.295779513
+/** Default unit's facing */
+public constant DEFAULT_FACING = angle(-1.570796326)// - Pi/2 = 270°
 
 /** an angle is just a wrapper around a real which allows for
 typesafe APIs without the confusion between radians and degrees*/
