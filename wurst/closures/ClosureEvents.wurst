@@ -48,8 +48,8 @@ public constant EVENT_PLAYER_CHAT_FILTER = ConvertPlayerEvent(96)
 */
 
 abstract class OnCastListener
- 	OnCastListener next = null
-	OnCastListener prev = null
+	thistype next = null
+	thistype prev = null
 	int abilId
 	unit eventUnit = null
 
@@ -96,8 +96,12 @@ abstract class OnUnitCast extends OnCastListener
 	abstract function fireEx(unit caster, unit target)
 
 public abstract class EventListener
-	static constant castMap = new HashMap<int, OnCastListener>
-	static constant castMapCasters = new HashMap<unit, OnCastListener>
+	static constant castMap 			= new HashMap<int, OnCastListener>
+	static constant castMapCasters 		= new HashMap<unit, OnCastListener>
+	static constant effectMap 			= new HashMap<int, OnCastListener>
+	static constant effectMapCasters 	= new HashMap<unit, OnCastListener>
+	static constant finishMap 			= new HashMap<int, OnCastListener>
+	static constant finishMapCasters 	= new HashMap<unit, OnCastListener>
 	static EventListener array generalListenersFirsts
 	static EventListener array unitListenersFirsts
 
@@ -127,28 +131,73 @@ public abstract class EventListener
 		unitListenersFirsts[uid] = listener
 		return listener
 
+	/*		ON SPELL CAST 	*/
 	static function onCast(unit u, int abilId, OnCastListener listener) returns OnCastListener
-		return addSpellInternal(u, abilId, listener)
+		return addSpellCInternal(u, abilId, listener)
 
 	static function onTargetCast(unit u, int abilId, OnUnitCast listener) returns OnUnitCast
-		return addSpellInternal(u, abilId, listener) castTo OnUnitCast
+		return addSpellCInternal(u, abilId, listener) castTo OnUnitCast
 
 	static function onPointCast(unit u, int abilId, OnPointCast listener) returns OnPointCast
-		return addSpellInternal(u, abilId, listener) castTo OnPointCast
+		return addSpellCInternal(u, abilId, listener) castTo OnPointCast
 
 	static function onCast(int abilId, OnCastListener listener) returns OnCastListener
-		return addSpellInternal(null, abilId, listener)
+		return addSpellCInternal(null, abilId, listener)
 
 	static function onCast(unit u, OnCast listener) returns OnCast
-		return addSpellInternal(u, -1, listener) castTo OnCast
+		return addSpellCInternal(u, -1, listener) castTo OnCast
 
 	static function onTargetCast(int abilId, OnUnitCast listener) returns OnUnitCast
-		return addSpellInternal(null, abilId, listener) castTo OnUnitCast
+		return addSpellCInternal(null, abilId, listener) castTo OnUnitCast
 
 	static function onPointCast(int abilId, OnPointCast listener) returns OnPointCast
-		return addSpellInternal(null, abilId, listener) castTo OnPointCast
+		return addSpellCInternal(null, abilId, listener) castTo OnPointCast
+		
+	/*		ON SPELL EFFECT 	*/
+	static function onEffect(unit u, int abilId, OnCastListener listener) returns OnCastListener
+		return addSpellEInternal(u, abilId, listener)
 
-	static private function addSpellInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
+	static function onTargetEffect(unit u, int abilId, OnUnitCast listener) returns OnUnitCast
+		return addSpellEInternal(u, abilId, listener) castTo OnUnitCast
+
+	static function onPointEffect(unit u, int abilId, OnPointCast listener) returns OnPointCast
+		return addSpellEInternal(u, abilId, listener) castTo OnPointCast
+
+	static function onEffect(int abilId, OnCastListener listener) returns OnCastListener
+		return addSpellEInternal(null, abilId, listener)
+
+	static function onEffect(unit u, OnCast listener) returns OnCast
+		return addSpellEInternal(u, -1, listener) castTo OnCast
+
+	static function onTargetEffect(int abilId, OnUnitCast listener) returns OnUnitCast
+		return addSpellEInternal(null, abilId, listener) castTo OnUnitCast
+
+	static function onPointEffect(int abilId, OnPointCast listener) returns OnPointCast
+		return addSpellEInternal(null, abilId, listener) castTo OnPointCast
+
+	/*		ON SPELL FINISH 	*/
+	static function onFinish(unit u, int abilId, OnCastListener listener) returns OnCastListener
+		return addSpellFInternal(u, abilId, listener)
+
+	static function onTargetFinish(unit u, int abilId, OnUnitCast listener) returns OnUnitCast
+		return addSpellFInternal(u, abilId, listener) castTo OnUnitCast
+
+	static function onPointFinish(unit u, int abilId, OnPointCast listener) returns OnPointCast
+		return addSpellFInternal(u, abilId, listener) castTo OnPointCast
+
+	static function onFinish(int abilId, OnCastListener listener) returns OnCastListener
+		return addSpellFInternal(null, abilId, listener)
+
+	static function onFinish(unit u, OnCast listener) returns OnCast
+		return addSpellFInternal(u, -1, listener) castTo OnCast
+
+	static function onTargetFinish(int abilId, OnUnitCast listener) returns OnUnitCast
+		return addSpellFInternal(null, abilId, listener) castTo OnUnitCast
+
+	static function onPointFinish(int abilId, OnPointCast listener) returns OnPointCast
+		return addSpellFInternal(null, abilId, listener) castTo OnPointCast
+
+	static private function addSpellCInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
 		listener.abilId = abilId
 		if u != null
 			listener.eventUnit = u
@@ -162,6 +211,38 @@ public abstract class EventListener
 				listener.next = castMap.get(abilId)
 
 			castMap.put(abilId, listener)
+		return listener
+
+	static private function addSpellEInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
+		listener.abilId = abilId
+		if u != null
+			listener.eventUnit = u
+			if effectMapCasters.has(u)
+				effectMapCasters.get(u).prev = listener
+				listener.next = effectMapCasters.get(u)
+			effectMapCasters.put(u, listener)
+		else
+			if effectMap.has(abilId)
+				effectMap.get(abilId).prev = listener
+				listener.next = effectMap.get(abilId)
+
+			effectMap.put(abilId, listener)
+		return listener
+
+	static private function addSpellFInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
+		listener.abilId = abilId
+		if u != null
+			listener.eventUnit = u
+			if finishMapCasters.has(u)
+				finishMapCasters.get(u).prev = listener
+				listener.next = finishMapCasters.get(u)
+			finishMapCasters.put(u, listener)
+		else
+			if finishMap.has(abilId)
+				finishMap.get(abilId).prev = listener
+				listener.next = finishMap.get(abilId)
+
+			finishMap.put(abilId, listener)
 		return listener
 
 	static function generalEventCallback()
@@ -182,7 +263,7 @@ public abstract class EventListener
 				listener.onEvent()
 				listener = listener.next
 
-	static function onSpellEffect()
+	static function onSpellCast()
 		let trigUnit = GetTriggerUnit()
 		let abilId = GetSpellAbilityId()
 		if castMapCasters.has(trigUnit)
@@ -193,6 +274,38 @@ public abstract class EventListener
 				listener = listener.next
 		if castMap.has(abilId)
 			var listener = castMap.get(abilId)
+			while listener != null
+				if listener.eventUnit == null or listener.eventUnit == trigUnit
+					listener.fire(GetSpellAbilityUnit())
+				listener = listener.next
+
+	static function onSpellEffect()
+		let trigUnit = GetTriggerUnit()
+		let abilId = GetSpellAbilityId()
+		if effectMapCasters.has(trigUnit)
+			var listener = effectMapCasters.get(trigUnit)
+			while listener != null
+				if listener.abilId == -1 or listener.abilId == abilId
+					listener.fire(GetSpellAbilityUnit())
+				listener = listener.next
+		if effectMap.has(abilId)
+			var listener = effectMap.get(abilId)
+			while listener != null
+				if listener.eventUnit == null or listener.eventUnit == trigUnit
+					listener.fire(GetSpellAbilityUnit())
+				listener = listener.next
+
+	static function onSpellFinish()
+		let trigUnit = GetTriggerUnit()
+		let abilId = GetSpellAbilityId()
+		if finishMapCasters.has(trigUnit)
+			var listener = finishMapCasters.get(trigUnit)
+			while listener != null
+				if listener.abilId == -1 or listener.abilId == abilId
+					listener.fire(GetSpellAbilityUnit())
+				listener = listener.next
+		if finishMap.has(abilId)
+			var listener = finishMap.get(abilId)
 			while listener != null
 				if listener.eventUnit == null or listener.eventUnit == trigUnit
 					listener.fire(GetSpellAbilityUnit())
@@ -256,8 +369,16 @@ public function unregisterEventsForUnit(unit u)
 				let t = listener
 				listener = listener.next
 				destroy t
-		if EventListener.castMapCasters.has(u)
-			var listener = EventListener.castMapCasters.get(u)
+		if EventListener.effectMapCasters.has(u)
+			var listener = EventListener.effectMapCasters.get(u)
+			EventListener.effectMapCasters.remove(u)
+			while listener != null
+				let t = listener
+				listener = listener.next
+				destroy t
+		if EventListener.finishMapCasters.has(u)
+			var listener = EventListener.finishMapCasters.get(u)
+			EventListener.finishMapCasters.remove(u)
 			while listener != null
 				let t = listener
 				listener = listener.next
@@ -301,4 +422,6 @@ init
 			..registerPlayerEvent(players[i], EVENT_PLAYER_MOUSE_MOVE)
 			..registerPlayerChatEvent(players[i], "", false)
 
+		registerPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_CAST, null, () -> EventListener.onSpellCast(), null)
 		registerPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_EFFECT, null, () -> EventListener.onSpellEffect(), null)
+		registerPlayerUnitEvent(EVENT_PLAYER_UNIT_SPELL_FINISH, null, () -> EventListener.onSpellFinish(), null)
