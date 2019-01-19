@@ -150,6 +150,18 @@ public function player.getTaxRate(player otherPlayer, playerstate whichResource)
 public function player.isRacePrefSet(racepreference preference) returns bool
 	return IsPlayerRacePrefSet(this, preference)
 
+public function player.enableSelect(bool state, bool ui)
+	if localPlayer == this 
+		EnableSelect(state,ui)
+
+public function player.enablePreSelect(bool state, bool ui)
+	if localPlayer == this 
+		EnablePreSelect(state,ui)
+
+public function player.enableDragSelect(bool state, bool ui)
+	if localPlayer == this 
+		EnableDragSelect(state, ui)
+
 @Test
 function testPlayer()
 	let p = Player(0)
