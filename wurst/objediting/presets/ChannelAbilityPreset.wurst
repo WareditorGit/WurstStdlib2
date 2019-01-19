@@ -55,6 +55,10 @@ public class ChannelAbilityPreset extends AbilityDefinitionIllidanChannel
 		super(newId)
 		setup(lvls, removeChannelProperties)
 
+	construct(int newId)
+		super(newId)
+		setup(1,false)
+
 	function setup(int lvls, boolean removeChannelProperties)
 		this.lvls = lvls
 		tooltipStartListen()
