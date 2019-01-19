@@ -47,9 +47,13 @@ public function real.op_mult(vec2 vec) returns vec2
 public function vec2.op_mult(vec2 v) returns vec2
 	return vec2(this.x * v.x, this.y * v.y)
 
-/** * Operator */
-public function vec2.op_div(real factor) returns vec2
+/** / Operator */
+public function vec2.op_divReal(real factor) returns vec2
 	return vec2(this.x / factor, this.y / factor)
+
+/** / Operator */
+public function real.op_divReal(vec2 vec) returns vec2
+	return vec2(this / vec.x, this / vec.y)
 
 /** Add two reals to the coordiantes of this vector */
 public function vec2.add(real x, real y)	returns vec2
@@ -77,6 +81,10 @@ public function vec2.rotate(angle angl) returns vec2
 	let px = this.x * c - this.y * s
 	let py = this.x * s + this.y * c
 	return vec2(px, py)
+
+/** Returns the angle of the vector [-PI;PI] */
+public function vec2.angle() returns angle 
+	return angle(Atan2(this.y,this.x))
 
 /** Convert this vector to a 3d vector with z = 0. */
 public function vec2.toVec3() returns vec3
@@ -250,6 +258,14 @@ public function vec3.op_mult(real factor) returns vec3
 /** dot Operator */
 public function real.op_mult(vec3 v) returns vec3
 	return vec3(v.x * this, v.y * this, v.z * this)
+
+/** / Operator */
+public function vec3.op_divReal(real factor) returns vec3
+	return vec3(this.x / factor, this.y / factor, this.z / factor)
+	
+/** / Operator */
+public function real.op_divReal(vec3 v) returns vec3
+	return vec3(v.x / this, v.y / this, v.z / this)
 
 /** add 3 realvalues to the coordinates of this Vector */
 public function vec3.add(real x, real y, real z)	returns vec3
