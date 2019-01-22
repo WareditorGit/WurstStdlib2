@@ -47,28 +47,56 @@ public constant EVENT_PLAYER_CHAT_FILTER = ConvertPlayerEvent(96)
 			- EVENT_PLAYER_ARROW_*
 */
 
+enum CastListenerType 
+	CAST 
+	EFFECT 
+	FINISH 
+
 abstract class OnCastListener
 	thistype next = null
 	thistype prev = null
 	int abilId
 	unit eventUnit = null
 
+	CastListenerType _type 
+	
+	function setType(CastListenerType castType)
+		_type = castType
+
 	abstract function fire(unit caster)
 
 	ondestroy
+		thistype listener = null 
 		if eventUnit != null
-			var listener = EventListener.castMapCasters.get(eventUnit)
-			if listener == this
-				EventListener.castMapCasters.put(eventUnit, next)
-			else if prev != null
-				prev.next = next
-		else
-			var listener = EventListener.castMap.get(abilId)
-			if listener == this
-				EventListener.castMap.put(abilId, next)
-			else if prev != null
-				prev.next = next
-
+			switch _type 
+				case CAST 
+					listener = EventListener.castMapCasters.get(eventUnit)
+					if listener == this
+						EventListener.castMapCasters.put(eventUnit, next)
+				case EFFECT 
+					listener = EventListener.effectMapCasters.get(eventUnit)
+					if listener == this
+						EventListener.effectMapCasters.put(eventUnit, next)
+				case FINISH 
+					listener = EventListener.finishMapCasters.get(eventUnit)
+					if listener == this
+						EventListener.finishMapCasters.put(eventUnit, next)
+			switch _type 
+				case CAST 
+					listener = EventListener.castMap.get(abilId)
+					if listener == this
+						EventListener.castMap.put(abilId, next)
+				case EFFECT 
+					listener = EventListener.effectMap.get(abilId)
+					if listener == this
+						EventListener.effectMap.put(abilId, next)
+				case FINISH 
+					listener = EventListener.finishMap.get(abilId)
+					if listener == this
+						EventListener.finishMap.put(abilId, next)
+		
+		if listener != this and prev != null 
+			prev.next = next 
 		next.prev = prev
 
 		next = null
@@ -198,6 +226,7 @@ public abstract class EventListener
 		return addSpellFInternal(null, abilId, listener) castTo OnPointCast
 
 	static private function addSpellCInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
+		listener.setType(CastListenerType.CAST)
 		listener.abilId = abilId
 		if u != null
 			listener.eventUnit = u
@@ -214,6 +243,7 @@ public abstract class EventListener
 		return listener
 
 	static private function addSpellEInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
+		listener.setType(CastListenerType.EFFECT)
 		listener.abilId = abilId
 		if u != null
 			listener.eventUnit = u
@@ -230,6 +260,7 @@ public abstract class EventListener
 		return listener
 
 	static private function addSpellFInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
+		listener.setType(CastListenerType.FINISH)
 		listener.abilId = abilId
 		if u != null
 			listener.eventUnit = u
