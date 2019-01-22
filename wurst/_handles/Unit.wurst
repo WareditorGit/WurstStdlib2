@@ -10,6 +10,9 @@ public function unit.isType(unittype utype) returns boolean
 
 /* Helper Functions for use with vectors */
 
+public function createUnit(player p, int unitId, vec2 pos) returns unit
+	return CreateUnit(p, unitId, pos.x, pos.y, DEFAULT_FACING.degrees())
+
 public function createUnit(player p, int unitId, vec2 pos, angle facing) returns unit
 	return CreateUnit(p, unitId, pos.x, pos.y, facing.degrees())
 
@@ -659,6 +662,12 @@ public function unit.incAbilityLevel(int abilityId)
 
 public function unit.decAbilityLevel(int abilityId)
 	DecUnitAbilityLevel(this, abilityId)
+
+public function unit.isInRangeOf(unit target, real distance) returns bool
+	return IsUnitInRange(this, target, distance)
+
+public function unit.isInRangeOf(vec2 target, real distance) returns bool
+	return IsUnitInRangeXY(this, target.x, target.y, distance)
 
 class InventoryIterator
 	private item array[6] items
