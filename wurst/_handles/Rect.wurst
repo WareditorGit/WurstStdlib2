@@ -50,6 +50,18 @@ public function rect.moveTo(vec2 newCenter)
 public function rect.moveTo(real newCenterX, real newCenterY)
 	MoveRectTo(this, newCenterX, newCenterY)
 
+public function rect.setMinX(real v)
+	SetRect(this, v, GetRectMinY(this), GetRectMaxX(this), GetRectMaxY(this))
+
+public function rect.setMinY(real v)
+	SetRect(this, GetRectMinX(this), v, GetRectMaxX(this), GetRectMaxY(this))
+
+public function rect.setMaxX(real v)
+	SetRect(this, GetRectMinX(this), GetRectMinY(this), v, GetRectMaxY(this))
+	
+public function rect.setMaxY(real v)
+	SetRect(this, GetRectMinX(this), GetRectMinY(this), GetRectMaxX(this), v)
+
 public function rect.resize(vec2 min, vec2 max)
 	SetRect(this, min.x, min.y, max.x, max.y)
 
