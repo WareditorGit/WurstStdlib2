@@ -57,11 +57,14 @@ public class HashList<T>
 		size--
 
 	/** Remove the first occurence of t from this list */
-	function remove(T t)
+	function remove(T t) returns bool
+		bool success = false 
 		for i = 0 to size - 1
 			if t castTo int == ht.loadInt(this castTo int, i)
 				removeAt(i)
+				success = true
 				break
+		return success
 
 	/** Get the size of the list */
 	function size() returns int
