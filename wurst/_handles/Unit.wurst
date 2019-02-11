@@ -154,11 +154,20 @@ public function unit.getFoodUsed() returns int
 public function unit.getHP() returns real
 	return this.getState(UNIT_STATE_LIFE)
 
+public function unit.getHPPercent() returns real
+	return this.getState(UNIT_STATE_LIFE) / this.getState(UNIT_STATE_MAX_LIFE)
+
 public function handle.getHandleId() returns int
 	return GetHandleId(this)
 
 public function unit.getMana() returns real
 	return this.getState(UNIT_STATE_MANA)
+
+public function unit.getManaPercent() returns real
+	let maxMana = this.getState(UNIT_STATE_MAX_MANA)
+	if maxMana <= 0 
+		return 0 
+	return this.getState(UNIT_STATE_MANA) / maxMana
 
 public function unit.getMaxHP() returns real
 	return this.getState(UNIT_STATE_MAX_LIFE)
