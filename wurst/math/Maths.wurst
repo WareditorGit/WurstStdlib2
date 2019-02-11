@@ -6,7 +6,9 @@ import Integer
 import Wurstunit
 
 /** Euler's constant */
-public constant real EULER	  =  2.718281828
+public constant real EULER	 	=  2.718281828
+/** Euler's constant inversed */
+public constant real EULER_I	=  1/EULER
 /** PI constant */
 public constant real PI			=  3.141592654
 /** PI * 2 constant */
@@ -67,6 +69,17 @@ public function min(vararg real numbers) returns real
 	for number in numbers
 		minNumber = number < minNumber ? number : minNumber
 	return minNumber
+
+public function ln(real a) returns real 
+	return a.ln()
+	
+public function real.ln() returns real 
+	var sum = 0.0
+	var a = this 
+	while a >= EULER
+		a *= EULER_I
+		sum ++
+	return sum + (a-1.)*(1. + 9./(2.+a) + 9./(1.+a*2.) + 1./a)*0.125
 
 @test function minmax()
 	int three = 3
