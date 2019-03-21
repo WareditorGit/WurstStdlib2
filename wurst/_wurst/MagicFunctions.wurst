@@ -45,3 +45,9 @@ public function compiletime(real expr) returns real
  */
  public function compiletime(boolean expr) returns boolean
  	return expr
+
+/** This is a builtin magic function.
+* It evaluates it's argument at compiletime and replaces the call with the result.
+*/
+public function compiletime(hashtable expr) returns hashtable
+	return expr
