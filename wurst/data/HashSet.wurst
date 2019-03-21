@@ -13,9 +13,11 @@ public class HashSet<T> extends HashList<T>
 				super.add(elem)
 
 	/** Removes an element from this set if present */
-	override function remove(T elem)
+	override function remove(T elem) returns bool
 		if count(elem) > 0
 			removeAt(position.loadInt(this castTo int, elem castTo int))
+			return true 
+		return false 
 
 	/** Remove the element at the given index */
 	override function removeAt(int index)
