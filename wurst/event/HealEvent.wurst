@@ -1,0 +1,168 @@
+package HealEvent
+
+/* HEAL ELEMENT */
+
+public class HealElement 
+    protected string name 
+    
+    construct(string name)
+        this.name = name 
+
+    function getName() returns string 
+        return name 
+
+
+/* HEAL INSTANCE */
+
+class HealInstance 
+    protected int id 
+    protected unit source 
+    protected unit target 
+    protected real originalAmount 
+
+    protected real amount 
+    protected HealElement healElement
+
+    protected static thistype current = null 
+    protected static thistype array stack
+    protected static int count = 0 
+
+    construct(int id, unit source, unit target, real amount, HealElement healElement)
+        this.id = id 
+        this.source = source 
+        this.target = target 
+        this.amount = amount 
+        this.originalAmount = amount 
+        this.healElement = healElement
+
+        count++ 
+        stack[count] = this 
+        current = this 
+
+    ondestroy
+        count-- 
+        current = stack[count]
+
+
+/* HEAL EVENT */
+
+public class HealEvent 
+
+
+    protected static bool abort = false 
+
+    protected static HealListener array firstListeners
+    protected static int maxPriority = 0 
+    
+    /* ON HEAL */
+    static function onHeal(int id, unit source, unit target, real amount, HealElement element)
+        
+        let heal = new HealInstance(id,source, target, amount, element)
+         
+        for i=0 to maxPriority
+            var listener = firstListeners[i]
+            while listener != null
+                listener.onEvent()
+                if abort
+                    heal.amount = 0
+                    break
+                else 
+                    listener = listener.next
+            if abort 
+                break 
+        
+        if heal.amount > 0 
+            target.addHP(heal.amount)
+
+        destroy heal
+        abort = false  
+
+
+    /* UTILS */
+    static function abortCurrent() 
+        abort = true 
+        
+
+    /* LISTENERS */
+    static function addListener(HealListener listener) returns HealListener
+        return addListener(0, listener)
+    static function addListener(int priority, HealListener listener) returns HealListener
+        listener.priority = priority
+        if firstListeners[priority] != null
+            firstListeners[priority].prev = listener
+            listener.next = firstListeners[priority]
+
+        firstListeners[priority] = listener
+
+        if maxPriority < priority 
+            maxPriority = priority 
+
+        return listener
+
+    protected static function removeListener(HealListener listener)
+        var prio = listener.priority
+        if firstListeners[prio] != null
+
+        if firstListeners[prio] == listener
+            firstListeners[prio] = listener.next
+            if listener.next == null and maxPriority == prio 
+                while firstListeners[prio] == null and prio > 0 
+                    prio--
+                maxPriority = prio 
+
+        else if listener.prev != null
+            listener.prev.next = listener.next
+
+        listener.next.prev = listener.prev
+
+
+    /* GETTERS */ 
+    static function getId() returns int  
+        return HealInstance.current.id 
+
+    static function getSource() returns unit 
+        return HealInstance.current.source
+
+    static function getTarget() returns unit 
+        return HealInstance.current.target
+
+    static function getAmount() returns real 
+        return HealInstance.current.amount
+
+    static function getOriginalAmount() returns real 
+        return HealInstance.current.originalAmount
+
+    static function getElement() returns HealElement 
+        return HealInstance.current.healElement
+
+    static function isFiring() returns bool 
+        return HealInstance.count > 0
+
+    /* SETTERS */
+
+    static function setAmount(real amount) 
+        HealInstance.current.amount = amount
+
+
+/* LISTENER */
+
+public abstract class HealListener 
+    int priority = 0 
+    thistype prev = null 
+    thistype next = null
+
+
+    abstract function onEvent()
+
+    ondestroy
+        HealEvent.removeListener(this)
+   
+
+/* MISC */
+
+@configurable public function getHealDesignation(HealElement e) returns string 
+    if e != null 
+        return e.getName() + " Heal"
+    return "Heal"
+
+       
