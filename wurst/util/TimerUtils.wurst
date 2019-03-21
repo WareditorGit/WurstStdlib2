@@ -65,7 +65,7 @@ public module TimedLoop
 	static private int instanceCount = 0	// The count
 	static private triggercondition triggerCond = null // the triggerCondition for this
 	static private conditionfunc cond = Condition(function onExpire)
-
+	static protected real period = ANIMATION_PERIOD
 	private Mode mode = Mode.PAUSED
 
 	abstract function onTimedLoop()
@@ -108,7 +108,7 @@ public module TimedLoop
 				triggerCond = TriggerAddCondition(timedLoopTrig, cond)
 				conditionCount++
 				if conditionCount == 1
-					timedLoopTimer.startPeriodic(ANIMATION_PERIOD, function evaluateTimedLoopTrig)
+					timedLoopTimer.startPeriodic(period, function evaluateTimedLoopTrig)
 		mode = Mode.RUNNING
 
 	ondestroy
