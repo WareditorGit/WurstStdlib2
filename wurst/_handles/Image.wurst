@@ -4,7 +4,6 @@ import public Colors
 import Vectors
 import ErrorHandling
 import Player
-import Annotations
 
 /** ImageLayer influences the order in which the images are drawn above one another:
 L1 ("Selection") is drawn above all other ImageLayers.
