@@ -3,6 +3,7 @@ import NoWurst
 import ObjEditingNatives
 import public TargetsAllowed
 import public ObjEditingCommons
+import Annotations
 
 public enum MovementType
 	None
@@ -517,6 +518,15 @@ public class UnitOrBuildingOrHeroDefinition extends W3UDefinition
 
 	function setGoldBountyAwardedBase(int data)
 		def.setInt("ubba", data)
+
+	function setLumberBountyAwardedSidesperDie(int data)
+		def.setInt("ulbs", data)
+
+	function setLumberBountyAwardedNumberofDice(int data)
+		def.setInt("ulbd", data)
+
+	function setLumberBountyAwardedBase(int data)
+		def.setInt("ulba", data)
 
 	function setFoodProduced(int data)
 		def.setInt("ufma", data)
