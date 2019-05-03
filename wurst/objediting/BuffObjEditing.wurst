@@ -24,8 +24,8 @@ public function createDummyBuffObject(string name, string tooltip, string iconpa
 
 	if compiletime
 		new BuffDefinition(buffId, 'Basl')
-			..setName(1, positive ? "|cff00ff00"+"bbb"+"|r" : "aaa")
-			..setTooltipNormal(1, name)
+			..setName(1, name)
+			..setTooltipNormal(1, positive ? "|cff00ff00"+name+"|r" : name)
 			..setTooltipNormalExtended(1, tooltip)
 			..setIconNormal(1, iconpath)
 
