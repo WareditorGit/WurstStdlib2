@@ -193,8 +193,8 @@ public abstract class EventListener
 	// static function onPointCast(unit u, int abilId, OnPointCast listener) returns OnPointCast
 	// 	return addSpellCInternal(u, abilId, listener) castTo OnPointCast
 
-	// static function onCast(int abilId, OnCastListener listener) returns OnCastListener
-	// 	return addSpellCInternal(null, abilId, listener)
+	static function onChannel(int abilId, OnCastListener listener) returns OnCastListener
+		return addSpellChInternal(null, abilId, listener)
 
 	static function onChannel(unit u, OnCast listener) returns OnCast
 		return addSpellChInternal(u, -1, listener) castTo OnCast
@@ -277,6 +277,9 @@ public abstract class EventListener
 
 	static function onEndCast(unit u, OnCast listener) returns OnCast
 		return addSpellEndInternal(u, -1, listener) castTo OnCast
+
+	static function onEndCast(int abilId, OnCastListener listener) returns OnCastListener
+		return addSpellEndInternal(null, abilId, listener)
 
 	static private function addSpellChInternal(unit u, int abilId, OnCastListener listener) returns OnCastListener
 		listener.setType(CastListenerType.CHANNEL)
