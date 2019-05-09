@@ -45,15 +45,6 @@ public function timer.release()
 	freeTimersCount++
 
 
-timer timedLoopTimer = CreateTimer()
-trigger timedLoopTrig = CreateTrigger()
-int conditionCount = 0
-
-function evaluateTimedLoopTrig()
-	TriggerEvaluate(timedLoopTrig)
-	if conditionCount == 0
-		timedLoopTimer.pause()
-
 enum Mode
 	RUNNING
 	PAUSED
@@ -63,12 +54,18 @@ enum Mode
 public module TimedLoop
 	static private thistype array instances		// The array
 	static private int instanceCount = 0	// The count
-	static private triggercondition triggerCond = null // the triggerCondition for this
-	static private conditionfunc cond = Condition(function onExpire)
-	static protected real period = ANIMATION_PERIOD
+
+	static timer timedLoopTimer = CreateTimer()
+	static trigger timedLoopTrig = null
+	
+	// static protected real period = ANIMATION_PERIOD	
+			
 	protected Mode mode = Mode.PAUSED
 
 	abstract function onTimedLoop()
+
+	function getPeriod() returns real 
+		return ANIMATION_PERIOD
 
 	private static function onExpire() returns boolean
 		int i = instanceCount - 1
@@ -86,10 +83,6 @@ public module TimedLoop
 			else
 				t.onTimedLoop()
 			i--
-		if instanceCount == 0
-			TriggerRemoveCondition(timedLoopTrig, triggerCond)
-			triggerCond = null
-			conditionCount--
 		return false
 
 	/* Just stops the periodic update of this object. */
@@ -102,15 +95,20 @@ public module TimedLoop
 
 	/* Starts the periodic updates for this object */
 	function startTimedLoop()
+		print(instanceCount)
 		instances[instanceCount] = this
 		instanceCount++
 		if instanceCount == 1
-			if triggerCond == null
-				triggerCond = TriggerAddCondition(timedLoopTrig, cond)
-				conditionCount++
-				if conditionCount == 1
-					timedLoopTimer.startPeriodic(period, function evaluateTimedLoopTrig)
+			if timedLoopTrig == null
+				timedLoopTrig = CreateTrigger()
+				TriggerAddCondition(timedLoopTrig, Condition(function onExpire))
+			timedLoopTimer.startPeriodic(getPeriod(), function evaluateTimedLoopTrig)
 		mode = Mode.RUNNING
+
+	static function evaluateTimedLoopTrig()
+		TriggerEvaluate(timedLoopTrig)
+		if instanceCount == 0
+			timedLoopTimer.pause()
 
 	ondestroy
 		if mode != Mode.PAUSED
