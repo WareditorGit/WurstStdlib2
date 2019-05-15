@@ -95,7 +95,6 @@ public module TimedLoop
 
 	/* Starts the periodic updates for this object */
 	function startTimedLoop()
-		print(instanceCount)
 		instances[instanceCount] = this
 		instanceCount++
 		if instanceCount == 1
