@@ -6,7 +6,7 @@ import Colors
 import Annotations
 
 /* 
-    Custom Frame can be defined in frame definition files (*.fdf).
+    Custom Frames can be defined in frame definition files (*.fdf).
     These files needs to be listed inside of a toc file and loaded to be used the toc file should always have an empty line at the end).
     Default fdf can be found in: 
         war3.w3mod:ui\framedef\ui\ 
@@ -144,7 +144,7 @@ public function framehandle.setAllPoints(framehandle relative)
 public function framehandle.setVisible(bool flag)
     BlzFrameSetVisible(this, flag)
 
-/** Shows or hides the frame for a specific player */
+/** Shows or hides the frame to the given player */
 public function framehandle.setVisibleFor(player p, bool flag)
     if localPlayer == p
         BlzFrameSetVisible(this, flag)
@@ -153,7 +153,7 @@ public function framehandle.setVisibleFor(player p, bool flag)
 public function framehandle.show()
     BlzFrameSetVisible(this, true)
 
-/** Shows the frame for a specific player */
+/** Shows the frame to the specific player */
 public function framehandle.showFor(player p)
     if localPlayer == p
         BlzFrameSetVisible(this, true)
@@ -162,7 +162,7 @@ public function framehandle.showFor(player p)
 public function framehandle.hide()
     BlzFrameSetVisible(this, false)
 
-/** Hides the frame for a specific player */
+/** Hides the frame to the specific player */
 public function framehandle.hideFor(player p)
     if localPlayer == p
         BlzFrameSetVisible(this, false)
@@ -267,6 +267,14 @@ public function framehandle.minMax(real minValue, real maxValue)
 public function framehandle.setStepSize(real stepSize)
     BlzFrameSetStepSize(this, stepSize)
 
+/** Sets the width of the frame (sets the height to its current height) */
+public function framehandle.setWidth(real width)
+    BlzFrameSetSize(this, width, this.getHeight())
+
+/** Sets the height of the frame (sets the width to its current width) */
+public function framehandle.setHeight(real height)
+    BlzFrameSetSize(this, this.getWidth(), height)
+
 /** Sets the width and height of the frame */
 public function framehandle.setSize(real width, real height)
     BlzFrameSetSize(this, width, height)
@@ -318,6 +326,6 @@ public function enableUIAutoPosition(boolean flag)
 public function hideOriginFrames(boolean flag)
     BlzHideOriginFrames(flag)
 
-/** Loads a toc file from a specific path, to include custom fdf files from, returns true on success */
+/** Loads a toc file from the given path, to include custom fdf files from, returns true on success */
 public function loadTOCFile(string tocFile) returns bool
     return BlzLoadTOCFile(tocFile)
