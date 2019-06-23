@@ -8,6 +8,7 @@ import Sound
 import Basics
 import Vectors
 import ErrorHandling
+import Player
 
 constant DEFAULT_SOUND_STOPS_ON_LEAVE_RANGE = true
 constant DEFAULT_SOUND_FADE_IN_RATE = 10
@@ -28,6 +29,7 @@ class SoundInstance
 	SoundDefinition soundDef
 	unit onUnit = null
 	player p = null
+	bool loc = false 
 	Sim3DSound s3s = null
 
 public class SoundDefinition
@@ -41,6 +43,7 @@ public class SoundDefinition
 	int fadeIn = DEFAULT_SOUND_FADE_IN_RATE
 	int fadeOut = DEFAULT_SOUND_FADE_OUT_RATE
 	string eaxSetting = DEFAULT_SOUND_EAX_SETTINGS
+	int volume = DEFAULT_SOUND_VOLUME
 
 	construct(string file, boolean looping)
 		this.file = file
@@ -54,7 +57,7 @@ public class SoundDefinition
 	private function getSound() returns SoundInstance
 		if soundStack.size() > 0
 			let shandle = soundStack.pop()
-			shandle.snd..setVolume(DEFAULT_SOUND_VOLUME)..setPitch(DEFAULT_SOUND_PITCH)..setChannel(SOUND_CHANNEL)
+			shandle.snd..setVolume(volume)..setPitch(DEFAULT_SOUND_PITCH)..setChannel(SOUND_CHANNEL)
 			return shandle
 		else
 			// No free handle, create a new one
@@ -64,13 +67,13 @@ public class SoundDefinition
 
 			sdata.snd..setDuration(this.duration)
 			..setChannel(SOUND_CHANNEL)
-			..setVolume(DEFAULT_SOUND_VOLUME)
+			..setVolume(volume)
 			..setPitch(DEFAULT_SOUND_PITCH)
 
 			if is3D
 				SetSoundDistances(sdata.snd, SOUND_MIN_DIST, SOUND_MAX_DIST)
 				SetSoundDistanceCutoff(sdata.snd, SOUND_DIST_CUT)
-				SetSoundConeAngles(sdata.snd, 0, 0, DEFAULT_SOUND_VOLUME)
+				SetSoundConeAngles(sdata.snd, 0, 0, volume)
 				SetSoundConeOrientation(sdata.snd, 0, 0, 0)
 
 			return sdata
@@ -103,6 +106,24 @@ public class SoundDefinition
 		this.duration = duration
 		var snd = getSound()
 		snd.p = p
+		snd.loc = localPlayer == p
+		getTimer()
+			..setData(snd castTo int)
+			..start(0., function SoundDefinition.playSound)
+		return snd
+
+	/** Plays this sound for the given local bool with the given duration.
+	See play() for more info */
+	function playForLocal(bool loc) returns SoundInstance
+		return playForLocal(loc, DEFAULT_SOUND_DURATION)
+	
+	/** Plays this sound for the given local bool with the given duration.
+	See play() for more info */
+	function playForLocal(bool loc, int duration) returns SoundInstance
+		this.duration = duration
+		var snd = getSound()
+		snd.p = players[0]
+		snd.loc = loc
 		getTimer()
 			..setData(snd castTo int)
 			..start(0., function SoundDefinition.playSound)
@@ -128,7 +149,7 @@ public class SoundDefinition
 		if sdata.pos.x != 0 and sdata.pos.y != 0
 			SetSoundPosition(sdata.snd, sdata.pos.x, sdata.pos.y, sdata.pos.z)
 		if sdata.p != null
-			if GetLocalPlayer() == sdata.p
+			if sdata.loc
 				StartSound(sdata.snd)
 		else
 			StartSound(sdata.snd)
@@ -149,6 +170,9 @@ public class SoundDefinition
 			destroy sdata
 
 		tm.release()
+
+	function setVolume(int volume)
+		this.volume = volume
 
 // WIP
 public class DynamicSound
